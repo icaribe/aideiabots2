@@ -5,12 +5,22 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
+import { useAuth } from "@/lib/auth";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 const Index = () => {
   const [webhookUrl, setWebhookUrl] = useState("");
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate("/auth");
+  };
 
   const handleWebhookTest = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,7 +54,6 @@ const Index = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      // Se chegou até aqui, consideramos que a requisição foi enviada
       toast({
         title: "Requisição Enviada",
         description: "A mensagem foi enviada para o webhook. Se o endpoint estiver correto, a requisição deve ter sido processada.",
@@ -75,6 +84,12 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-2xl mx-auto space-y-4">
+        <div className="flex justify-end mb-4">
+          <Button variant="ghost" onClick={handleLogout}>
+            Sair
+          </Button>
+        </div>
+
         <Card>
           <CardHeader>
             <CardTitle>Configuração de Webhook</CardTitle>

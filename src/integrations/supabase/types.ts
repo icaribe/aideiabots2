@@ -9,6 +9,66 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      agent_intents: {
+        Row: {
+          agent_id: string
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          required_fields: Json | null
+          updated_at: string
+          user_id: string
+          webhook_body_template: string | null
+          webhook_headers: Json | null
+          webhook_method: string | null
+          webhook_url: string | null
+        }
+        Insert: {
+          agent_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          required_fields?: Json | null
+          updated_at?: string
+          user_id: string
+          webhook_body_template?: string | null
+          webhook_headers?: Json | null
+          webhook_method?: string | null
+          webhook_url?: string | null
+        }
+        Update: {
+          agent_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          required_fields?: Json | null
+          updated_at?: string
+          user_id?: string
+          webhook_body_template?: string | null
+          webhook_headers?: Json | null
+          webhook_method?: string | null
+          webhook_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_intents_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "ai_agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agent_intents_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ai_agents: {
         Row: {
           created_at: string

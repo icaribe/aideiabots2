@@ -33,7 +33,6 @@ const Index = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        mode: "no-cors", // Necessário para webhooks externos
         body: JSON.stringify({
           message: message || "Teste de webhook",
           timestamp: new Date().toISOString(),
@@ -41,15 +40,31 @@ const Index = () => {
         }),
       });
 
+      if (!response.ok && response.status !== 0) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      // Se chegou até aqui, consideramos que a requisição foi enviada
       toast({
         title: "Requisição Enviada",
-        description: "A mensagem foi enviada para o webhook. Verifique o histórico da sua automação.",
+        description: "A mensagem foi enviada para o webhook. Se o endpoint estiver correto, a requisição deve ter sido processada.",
       });
     } catch (error) {
       console.error("Erro ao enviar webhook:", error);
+      
+      let errorMessage = "Falha ao enviar a mensagem. ";
+      
+      if (error instanceof Error) {
+        if (error.message.includes("Failed to fetch") || error.message.includes("NetworkError")) {
+          errorMessage += "Verifique se o endpoint está acessível e se permite requisições do seu domínio (CORS).";
+        } else {
+          errorMessage += error.message;
+        }
+      }
+
       toast({
-        title: "Erro",
-        description: "Falha ao enviar a mensagem. Verifique a URL e tente novamente.",
+        title: "Erro na Requisição",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -97,7 +112,10 @@ const Index = () => {
             </form>
           </CardContent>
           <CardFooter className="text-sm text-gray-500">
-            Dica: Use esta interface para testar suas integrações com n8n ou Make
+            <p className="text-xs text-muted-foreground">
+              Nota: Certifique-se de que o endpoint do webhook está configurado para aceitar requisições do seu domínio (CORS).
+              Se estiver usando n8n ou Make localmente, você pode precisar configurar as políticas de CORS adequadamente.
+            </p>
           </CardFooter>
         </Card>
 
